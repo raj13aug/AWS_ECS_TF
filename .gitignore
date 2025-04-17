@@ -1,1 +1,5 @@
 secrets.tfvars
+*.json
+*.terraform*
+*terraform.*
+*ssh-keys
