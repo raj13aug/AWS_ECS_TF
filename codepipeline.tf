@@ -85,6 +85,11 @@ resource "aws_codebuild_project" "build_project" {
   }
 }
 
+resource "aws_codestarconnections_connection" "github" {
+  name          = "my-github-connection"
+  provider_type = "GitHub"
+}
+
 
 resource "aws_codepipeline" "codepipeline" {
   name     = "ECSpipeline"
@@ -102,7 +107,7 @@ resource "aws_codepipeline" "codepipeline" {
       name             = "Source"
       category         = "Source"
       owner            = "ThirdParty"
-      provider         = "GitHub"
+      provider         = aws_codestarconnections_connection.github.arn
       version          = "1"
       output_artifacts = ["source_output"]
 
