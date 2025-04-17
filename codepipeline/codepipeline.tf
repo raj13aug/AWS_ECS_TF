@@ -3,6 +3,15 @@ data "aws_ecr_repository" "existing_repo" {
   name = "ecs-app-repo"
 }
 
+# data "aws_ecs_cluster" "ecs" {
+#   cluster_name = "my-demo-cluster"
+# }
+
+# data "aws_ecs_service" "ecs" {
+#   cluster_arn  = data.aws_ecs_cluster.ecs.arn
+#   service_name = "my-service"
+# }
+
 resource "aws_iam_role" "codepipeline_role" {
   name = "codepipelinerole"
   assume_role_policy = jsonencode({
@@ -72,7 +81,7 @@ resource "aws_codebuild_project" "build_project" {
 
   source {
     type      = "CODEPIPELINE"
-    buildspec = file("buildspec.yml")
+    buildspec = file("codepipeline/buildspec.yml")
 
   }
 
@@ -149,8 +158,8 @@ resource "aws_codepipeline" "codepipeline" {
       version         = "1"
 
       configuration = {
-        ClusterName = aws_ecs_cluster.ECS.name
-        ServiceName = aws_ecs_service.ECS-Service.name
+        ClusterName = "my-demo-cluster" # data.aws_ecs_cluster.ecs.cluster_name #aws_ecs_cluster.ECS.name    
+        ServiceName = "my-service"      # data.aws_ecs_service.ecs.service_name #aws_ecs_service.ECS-Service.name
         FileName    = "imagedefinitions.json"
       }
     }
