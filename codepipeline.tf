@@ -65,7 +65,7 @@ resource "aws_codebuild_project" "build_project" {
 
     environment_variable {
       name  = "REPOSITORY_URI"
-      value = aws_ecr_repository.ecr_repo.repository_url
+      value = data.aws_ecr_repository.existing_repo.repository_url
     }
   }
 
