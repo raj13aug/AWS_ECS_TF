@@ -1,7 +1,7 @@
 resource "aws_ecs_cluster" "ECS" {
-  name = "my-cluster"
+  name = "my-demo-cluster"
 
   tags = {
-    Name = "my-new-cluster"
+    Name = "my-demo-cluster"
   }
 }   
