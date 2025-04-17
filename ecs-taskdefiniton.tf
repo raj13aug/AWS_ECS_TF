@@ -8,7 +8,7 @@ resource "aws_ecs_task_definition" "TD" {
   container_definitions = jsonencode([
     {
       name      = "main-container"
-      image     = "gomurali/exp-app-1:2"
+      image     = "gkoenig/simplehttp"
       cpu       = 1024
       memory    = 2048
       essential = true
