@@ -8,7 +8,7 @@ resource "aws_ecs_task_definition" "TD" {
   container_definitions = jsonencode([
     {
       name      = "container"
-      image     = "gomurali/exp-app-1:2"
+      image     = "${aws_ecr_repository.ecr_repo.repository_url}:latest" #gomurali/exp-app-1:2
       cpu       = 1024
       memory    = 2048
       essential = true
