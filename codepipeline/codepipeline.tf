@@ -1,4 +1,5 @@
-resource "aws_ecr_repository" "ecr_repo" {
+
+data "aws_ecr_repository" "existing_repo" {
   name = "ecs-app-repo"
 }
 
