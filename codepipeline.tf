@@ -2,11 +2,6 @@ resource "aws_ecr_repository" "ecr_repo" {
   name = "ecs-app-repo"
 }
 
-resource "aws_s3_bucket" "pipeline_bucket" {
-  bucket = "ecs-pipeline-artifacts-785"
-  tags   = { name = "ECS Pipeline Bucket" }
-}
-
 resource "aws_iam_role" "codepipeline_role" {
   name = "codepipelinerole"
   assume_role_policy = jsonencode({
@@ -59,7 +54,7 @@ resource "aws_codebuild_project" "build_project" {
   service_role = aws_iam_role.codepipeline_role.arn
 
   artifacts {
-    type = "CODEPIPELINE"
+    type = "NO_ARTIFACTS"
   }
 
   environment {
@@ -90,6 +85,10 @@ resource "aws_codestarconnections_connection" "github" {
   provider_type = "GitHub"
 }
 
+resource "aws_s3_bucket" "pipeline_bucket" {
+  bucket = "ecs-pipeline-artifacts-785"
+  tags   = { name = "ECS Pipeline Bucket" }
+}
 
 resource "aws_codepipeline" "codepipeline" {
   name     = "ECSpipeline"
