@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "pipeline_artifacts" {
-  bucket        = "pipeline-artifacts-nataraj"
+  bucket        = "pipeline-artifacts-nataraj-789654"
   force_destroy = true
 }
 
@@ -24,8 +24,8 @@ resource "aws_iam_policy" "codepipeline_s3_policy" {
           "s3:ListBucket"
         ]
         Resource = [
-          "arn:aws:s3:::pipeline-artifacts-nataraj",
-          "arn:aws:s3:::pipeline-artifacts-nataraj/*"
+          "arn:aws:s3:::pipeline-artifacts-nataraj-789654",
+          "arn:aws:s3:::pipeline-artifacts-nataraj-789654/*"
         ]
       }
     ]
