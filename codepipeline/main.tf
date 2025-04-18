@@ -217,6 +217,34 @@ EOF
 }
 
 
+resource "aws_iam_policy" "codepipeline_ecs_permission" {
+  name        = "CodepipelineECSPermissions"
+  description = "CodepipelineECSPermissions"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecs:*",
+        "iam:PassRole"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_policy_attachment" "codepipeline_ecs" {
+  name       = "codepipeline-attach"
+  roles      = [aws_iam_role.codepipeline_role.name]
+  policy_arn = aws_iam_policy.codepipeline_ecs_permission.arn
+}
+
+
 resource "aws_codepipeline" "automacao_pipeline" {
   name     = "Automacao-Testes-Pipeline"
   role_arn = aws_iam_role.codepipeline_role.arn
