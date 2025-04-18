@@ -1,5 +1,9 @@
-module "codepipeline" {
-  source = "../codepipeline"
+# module "codepipeline" {
+#   source = "../codepipeline"
+# }
+
+data "aws_ecr_repository" "existing_repo" {
+  name = "ecs-app-repo"
 }
 
 resource "aws_ecs_task_definition" "TD" {
@@ -12,7 +16,7 @@ resource "aws_ecs_task_definition" "TD" {
   container_definitions = jsonencode([
     {
       name      = "container"
-      image     = module.codepipeline.repository_url #"${data.aws_ecr_repository.existing_repo.repository_url}:latest" #gomurali/exp-app-1:2
+      image     = "${data.aws_ecr_repository.existing_repo.repository_url}:latest" #gomurali/exp-app-1:2
       cpu       = 1024
       memory    = 2048
       essential = true
