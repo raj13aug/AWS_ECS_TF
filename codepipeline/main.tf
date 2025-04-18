@@ -41,7 +41,7 @@ resource "aws_iam_role_policy_attachment" "attach_s3_policy_to_pipeline_role" {
 
 resource "aws_iam_policy" "codepipeline_codebuild_permissions" {
   name        = "CodePipelineCodeBuildPermissions"
-  description = "Permite que o CodePipeline inicie builds no CodeBuild"
+  description = "CodePipelineCodeBuildPermissions CodeBuild"
 
   policy = <<EOF
 {
@@ -59,7 +59,7 @@ resource "aws_iam_policy" "codepipeline_codebuild_permissions" {
         "iam:PassRole",
         "ecr:GetAuthorizationToken"
       ],
-      "Resource": "arn:aws:codebuild:us-east-1:932999788441:project/Automacao-Testes"
+      "Resource": "arn:aws:codebuild:us-east-1:932999788441:project/Auto-ECS-Test"
     }
   ]
 }
@@ -75,7 +75,7 @@ resource "aws_iam_role_policy_attachment" "codepipeline_codebuild_attach" {
 
 resource "aws_iam_policy" "codebuild_cloudwatch_permissions" {
   name        = "CodeBuildCloudWatchPermissions"
-  description = "Permite ao CodeBuild criar logs no CloudWatch"
+  description = "logs CloudWatch"
 
   policy = <<EOF
 {
@@ -141,22 +141,15 @@ resource "aws_iam_policy_attachment" "codebuild_s3_access" {
 
 
 
-resource "aws_codebuild_project" "automacao_testes" {
-  name          = "Automacao-Testes"
+resource "aws_codebuild_project" "auto_test" {
+  name          = "Auto-ECS-Test"
   service_role  = aws_iam_role.codebuild_role.arn
   build_timeout = "10"
 
-  # source {
-  #   type      = "CODEPIPELINE"
-  #   buildspec = file("buildspec.yml")
-
-  # }
-
-
   source {
     type     = "GITHUB"
-    location = "https://github.com/raj13aug/ecs_code_pipeline.git" # Alterar para seu repositório
-    # Arquivo de build
+    location = "https://github.com/raj13aug/ecs_code_pipeline.git"
+
     buildspec = <<EOF
     version: 0.2
     env:
@@ -252,7 +245,7 @@ resource "aws_iam_policy_attachment" "codepipeline_ecs" {
 
 
 resource "aws_codepipeline" "automacao_pipeline" {
-  name     = "Automacao-Testes-Pipeline"
+  name     = "Auto-ECS-Test-Pipeline"
   role_arn = aws_iam_role.codepipeline_role.arn
 
   artifact_store {
@@ -282,7 +275,7 @@ resource "aws_codepipeline" "automacao_pipeline" {
   stage {
     name = "Build"
     action {
-      name             = "CompilarETestar"
+      name             = "Build-Stage"
       category         = "Build"
       owner            = "AWS"
       provider         = "CodeBuild"
@@ -290,7 +283,7 @@ resource "aws_codepipeline" "automacao_pipeline" {
       output_artifacts = ["BuildOutput"]
       version          = "1"
       configuration = {
-        ProjectName = aws_codebuild_project.automacao_testes.name
+        ProjectName = aws_codebuild_project.auto_test.name
       }
     }
   }
@@ -328,6 +321,4 @@ resource "aws_codepipeline" "automacao_pipeline" {
       }
     }
   }
-
-
 }
