@@ -15,14 +15,14 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t $REPOSITORY_URI:latest .
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:latest
+      - docker build -t REPOSITORY_URI/hello-world:latest .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI/hello-world:latest
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
-      - docker push $REPOSITORY_URI:latest
+      - docker push REPOSITORY_URI/hello-world:latest
       - echo Writing image definitions file...
-      - printf '[{"name":"hello-world","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"hello-world","imageUri":"%s"}]' $REPOSITORY_URI/hello-world:latest > imagedefinitions.json
 artifacts:
     files: imagedefinitions.json

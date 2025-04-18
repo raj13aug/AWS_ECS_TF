@@ -158,30 +158,36 @@ resource "aws_codebuild_project" "automacao_testes" {
     location = "https://github.com/raj13aug/ecs_code_pipeline.git" # Alterar para seu repositório
     # Arquivo de build
     buildspec = <<EOF
-version: 0.2
+    version: 0.2
+    env:
+      variables:
+        AWS_DEFAULT_REGION: "us-east-1"
+        REPOSITORY_URI: "932999788441.dkr.ecr.us-east-1.amazonaws.com/ecs-app-repo"
 
-phases:
-  pre_build:
-    commands:
-      - echo Logging in to Amazon ECR...
-      - aws --version
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 932999788441.dkr.ecr.us-east-1.amazonaws.com/ecs-app-repo
-  build:
-    commands:
-      - echo Build started on `date`
-      - echo Building the Docker image...
-      - docker build -t 932999788441.dkr.ecr.us-east-1.amazonaws.com/ecs-app-repo:latest .
-      - docker tag 932999788441.dkr.ecr.us-east-1.amazonaws.com/ecs-app-repo:latest 932999788441.dkr.ecr.us-east-1.amazonaws.com/ecs-app-repo:latest
-  post_build:
-    commands:
-      - echo Build completed on `date`
-      - echo Pushing the Docker images...
-      - docker push 932999788441.dkr.ecr.us-east-1.amazonaws.com/ecs-app-repo:latest
-      - echo Writing image definitions file...
-      - printf '[{"name":"hello-world","imageUri":"%s"}]' 932999788441.dkr.ecr.us-east-1.amazonaws.com/ecs-app-repo > imagedefinitions.json
-artifacts:
-    files: imagedefinitions.json
-  EOF
+    phases:
+      pre_build:
+        commands:
+          - echo Logging in to Amazon ECR...
+          - aws --version
+          - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 932999788441.dkr.ecr.us-east-1.amazonaws.com/ecs-app-repo
+          - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+          - IMAGE_TAG=$${COMMIT_HASH:=latest}          
+      build:
+        commands:
+          - echo Build started on `date`
+          - echo Building the Docker image...
+          - docker build -t $REPOSITORY_URI:latest .
+          - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+      post_build:
+        commands:
+          - echo Build completed on `date`
+          - echo Pushing the Docker images...
+          - docker push $REPOSITORY_URI:$IMAGE_TAG
+          - echo Writing image definitions file...
+          - printf '[{"name":"%s","imageUri":"%s"}]'  $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+    artifacts:
+        files: imagedefinitions.json
+      EOF
   }
 
   environment {
