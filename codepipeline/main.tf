@@ -1,5 +1,9 @@
+resource "random_id" "suffix" {
+  byte_length = 4
+}
+
 resource "aws_s3_bucket" "pipeline_artifacts" {
-  bucket        = "pipeline-artifacts-nataraj-789654"
+  bucket        = "pipeline-artifacts-nataraj-${random_id.suffix.hex}"
   force_destroy = true
 }
 
@@ -24,8 +28,8 @@ resource "aws_iam_policy" "codepipeline_s3_policy" {
           "s3:ListBucket"
         ]
         Resource = [
-          "arn:aws:s3:::pipeline-artifacts-nataraj-789654",
-          "arn:aws:s3:::pipeline-artifacts-nataraj-789654/*"
+          "arn:aws:s3:::pipeline-artifacts-nataraj-${random_id.suffix.hex}",
+          "arn:aws:s3:::pipeline-artifacts-nataraj-${random_id.suffix.hex}/*"
         ]
       }
     ]
@@ -177,7 +181,7 @@ resource "aws_codebuild_project" "auto_test" {
           - echo Pushing the Docker images...
           - docker push $REPOSITORY_URI:$IMAGE_TAG
           - echo Writing image definitions file...
-          - printf '[{"name":"%s","imageUri":"%s"}]'  $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+          - printf '[{"name":"container","imageUri":"%s"}]'  $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
     artifacts:
         files: imagedefinitions.json
       EOF

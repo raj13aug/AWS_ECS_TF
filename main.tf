@@ -6,6 +6,6 @@ module "codepipeline" {
 
 # # call the ECS module
 module "ecs" {
-  source = "./ecs"
-  # depends_on = [module.codepipeline]
+  source     = "./ecs"
+  depends_on = [module.codepipeline]
 }
