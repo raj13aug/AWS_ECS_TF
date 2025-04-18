@@ -1,6 +1,6 @@
-resource "aws_ecr_repository" "my_repo" {
-  name = "ecs-app-repo"
-}
+# resource "aws_ecr_repository" "my_repo" {
+#   name = "ecs-app-repo"
+# }
 
 # resource "null_resource" "docker_clone_push" {
 #   # Only runs after repo is created

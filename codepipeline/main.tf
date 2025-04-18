@@ -255,4 +255,25 @@ resource "aws_codepipeline" "automacao_pipeline" {
       }
     }
   }
+
+  stage {
+    name = "Deploy"
+
+    action {
+      name            = "Deploy"
+      category        = "Deploy"
+      owner           = "AWS"
+      provider        = "ECS"
+      input_artifacts = ["BuildOutput"]
+      version         = "1"
+
+      configuration = {
+        ClusterName = "my-demo-cluster" # data.aws_ecs_cluster.ecs.cluster_name #aws_ecs_cluster.ECS.name    
+        ServiceName = "my-service"      # data.aws_ecs_service.ecs.service_name #aws_ecs_service.ECS-Service.name
+        FileName    = "imagedefinitions.json"
+      }
+    }
+  }
+
+
 }

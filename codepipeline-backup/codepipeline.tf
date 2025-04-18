@@ -115,68 +115,68 @@ resource "aws_s3_bucket" "pipeline_bucket" {
   tags   = { name = "ECS Pipeline Bucket" }
 }
 
-# resource "aws_codepipeline" "codepipeline" {
-#   name     = "ECSpipeline"
-#   role_arn = aws_iam_role.codepipeline_role.arn
+resource "aws_codepipeline" "codepipeline" {
+  name     = "ECSpipeline"
+  role_arn = aws_iam_role.codepipeline_role.arn
 
-#   artifact_store {
-#     location = aws_s3_bucket.pipeline_bucket.bucket
-#     type     = "S3"
-#   }
+  artifact_store {
+    location = aws_s3_bucket.pipeline_bucket.bucket
+    type     = "S3"
+  }
 
-#   stage {
-#     name = "Source"
+  stage {
+    name = "Source"
 
-#     action {
-#       name             = "Source"
-#       category         = "Source"
-#       owner            = "ThirdParty"
-#       provider         = aws_codestarconnections_connection.github.arn
-#       version          = "1"
-#       output_artifacts = ["source_output"]
+    action {
+      name             = "Source"
+      category         = "Source"
+      owner            = "ThirdParty"
+      provider         = aws_codestarconnections_connection.github.arn
+      version          = "1"
+      output_artifacts = ["source_output"]
 
-#       configuration = {
-#         Owner      = "raj13aug"
-#         Repo       = "https://github.com/raj13aug/ecs_code_pipeline.git"
-#         BranchName = "main"
-#       }
-#     }
-#   }
+      configuration = {
+        Owner      = "raj13aug"
+        Repo       = "https://github.com/raj13aug/ecs_code_pipeline.git"
+        BranchName = "main"
+      }
+    }
+  }
 
-#   stage {
-#     name = "Build"
+  stage {
+    name = "Build"
 
-#     action {
-#       name             = "Build"
-#       category         = "Build"
-#       owner            = "AWS"
-#       provider         = "CodeBuild"
-#       input_artifacts  = ["source_output"]
-#       output_artifacts = ["build_output"]
-#       version          = "1"
+    action {
+      name             = "Build"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      input_artifacts  = ["source_output"]
+      output_artifacts = ["build_output"]
+      version          = "1"
 
-#       configuration = {
-#         ProjectName = aws_codebuild_project.build_project.name
-#       }
-#     }
-#   }
+      configuration = {
+        ProjectName = aws_codebuild_project.build_project.name
+      }
+    }
+  }
 
-#   stage {
-#     name = "Deploy"
+  stage {
+    name = "Deploy"
 
-#     action {
-#       name            = "Deploy"
-#       category        = "Deploy"
-#       owner           = "AWS"
-#       provider        = "ECS"
-#       input_artifacts = ["build_output"]
-#       version         = "1"
+    action {
+      name            = "Deploy"
+      category        = "Deploy"
+      owner           = "AWS"
+      provider        = "ECS"
+      input_artifacts = ["build_output"]
+      version         = "1"
 
-#       configuration = {
-#         ClusterName = "my-demo-cluster" # data.aws_ecs_cluster.ecs.cluster_name #aws_ecs_cluster.ECS.name    
-#         ServiceName = "my-service"      # data.aws_ecs_service.ecs.service_name #aws_ecs_service.ECS-Service.name
-#         FileName    = "imagedefinitions.json"
-#       }
-#     }
-#   }
-# }
+      configuration = {
+        ClusterName = "my-demo-cluster" # data.aws_ecs_cluster.ecs.cluster_name #aws_ecs_cluster.ECS.name    
+        ServiceName = "my-service"      # data.aws_ecs_service.ecs.service_name #aws_ecs_service.ECS-Service.name
+        FileName    = "imagedefinitions.json"
+      }
+    }
+  }
+}
