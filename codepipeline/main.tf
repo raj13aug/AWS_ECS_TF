@@ -120,6 +120,11 @@ resource "aws_iam_role" "codebuild_role" {
 EOF
 }
 
+resource "aws_iam_policy_attachment" "codebuild_ecs_acess" {
+  name       = "codebuild-attach"
+  roles      = [aws_iam_role.codebuild_role.name]
+  policy_arn = "arn:aws:iam::aws:policy/AmazonECS_FullAccess" #AmazonS3FullAccess
+}
 
 
 resource "aws_iam_policy_attachment" "codebuild_permissions" {
@@ -252,6 +257,21 @@ resource "aws_codepipeline" "automacao_pipeline" {
       version          = "1"
       configuration = {
         ProjectName = aws_codebuild_project.automacao_testes.name
+      }
+    }
+  }
+
+  stage {
+    name = "Approval"
+    action {
+      name      = "ManualApproval"
+      category  = "Approval"
+      owner     = "AWS"
+      provider  = "Manual"
+      version   = "1"
+      run_order = 1
+      configuration = {
+        CustomData = "Please approve deployment to ECS"
       }
     }
   }
