@@ -1,3 +1,4 @@
+# Target group for LB
 resource "aws_lb_target_group" "TG" {
   name        = "TG"
   port        = "80"

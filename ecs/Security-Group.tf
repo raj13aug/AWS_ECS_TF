@@ -1,3 +1,5 @@
+
+# security group for LB
 resource "aws_security_group" "SG" {
   name        = "SG"
   description = "Allow Port 80"

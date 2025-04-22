@@ -1,3 +1,5 @@
+# create the ECS cluster 
+
 resource "aws_ecs_cluster" "ECS" {
   name = "my-demo-cluster"
 

@@ -1,8 +1,10 @@
+# default region
 variable "aws_region" {
-  description = "Região da AWS"
+  description = "Region AWS"
   default     = "sa-east-1"
 }
 
+# GitHub Personal Access Token
 variable "github_token" {
   description = "GitHub Personal Access Token"
   sensitive   = true

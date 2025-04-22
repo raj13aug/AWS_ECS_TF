@@ -1,3 +1,5 @@
+# Create an Application Load Balancer
+
 resource "aws_lb" "LB" {
   name               = "LB"
   internal           = false
@@ -10,6 +12,7 @@ resource "aws_lb" "LB" {
   }
 }
 
+# configure the ALB to forward traffic to target group
 resource "aws_alb_listener" "Listener" {
   load_balancer_arn = aws_lb.LB.id
   port              = "80"

@@ -1,3 +1,5 @@
+# Deploys the ECS task definition as service with LB
+
 resource "aws_ecs_service" "ECS-Service" {
   name                               = "my-service"
   launch_type                        = "FARGATE"

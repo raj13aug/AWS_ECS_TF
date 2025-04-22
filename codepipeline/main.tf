@@ -1,18 +1,22 @@
+# random ID generate
+
 resource "random_id" "suffix" {
   byte_length = 4
 }
 
+# Store code pipeline artifacts
 resource "aws_s3_bucket" "pipeline_artifacts" {
   bucket        = "pipeline-artifacts-nataraj-${random_id.suffix.hex}"
   force_destroy = true
 }
 
+# ECR repo
 resource "aws_ecr_repository" "my_repo" {
   name         = "ecs-app-repo"
   force_delete = true
 }
 
-
+# IAM policy
 resource "aws_iam_policy" "codepipeline_s3_policy" {
   name        = "CodePipelineS3Policy"
   description = "CodePipeline acess to s3"
@@ -36,13 +40,14 @@ resource "aws_iam_policy" "codepipeline_s3_policy" {
   })
 }
 
+#Attach s3 policy to codepiple role
 
 resource "aws_iam_role_policy_attachment" "attach_s3_policy_to_pipeline_role" {
   policy_arn = aws_iam_policy.codepipeline_s3_policy.arn
   role       = aws_iam_role.codepipeline_role.name
 }
 
-
+#IAM policy for codepipeline for ecs , ecr and s3
 resource "aws_iam_policy" "codepipeline_codebuild_permissions" {
   name        = "CodePipelineCodeBuildPermissions"
   description = "CodePipelineCodeBuildPermissions CodeBuild"
@@ -70,13 +75,13 @@ resource "aws_iam_policy" "codepipeline_codebuild_permissions" {
 EOF
 }
 
-
+#Attach policy to codepipeline role
 resource "aws_iam_role_policy_attachment" "codepipeline_codebuild_attach" {
   policy_arn = aws_iam_policy.codepipeline_codebuild_permissions.arn
   role       = aws_iam_role.codepipeline_role.name
 }
 
-
+# IAM policy for cloudwatch
 resource "aws_iam_policy" "codebuild_cloudwatch_permissions" {
   name        = "CodeBuildCloudWatchPermissions"
   description = "logs CloudWatch"
@@ -99,13 +104,13 @@ resource "aws_iam_policy" "codebuild_cloudwatch_permissions" {
 EOF
 }
 
-
+#Attach the cloudwatch policy to codebuild
 resource "aws_iam_role_policy_attachment" "codebuild_cloudwatch_attach" {
   policy_arn = aws_iam_policy.codebuild_cloudwatch_permissions.arn
   role       = aws_iam_role.codebuild_role.name
 }
 
-
+# create the assume role
 resource "aws_iam_role" "codebuild_role" {
   name               = "CodeBuildRole"
   assume_role_policy = <<EOF
@@ -123,20 +128,20 @@ resource "aws_iam_role" "codebuild_role" {
 }
 EOF
 }
-
+#Attach the cloudwatAmazonS3FullAccess  policy to codebuild
 resource "aws_iam_policy_attachment" "codebuild_ecs_acess" {
   name       = "codebuild-attach"
   roles      = [aws_iam_role.codebuild_role.name]
   policy_arn = "arn:aws:iam::aws:policy/AmazonECS_FullAccess" #AmazonS3FullAccess
 }
 
-
+#Attach the ECR  policy to codebuild
 resource "aws_iam_policy_attachment" "codebuild_permissions" {
   name       = "codebuild-attach"
   roles      = [aws_iam_role.codebuild_role.name]
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser" #AmazonS3FullAccess
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
 }
-
+#Attach the S3  policy to codebuild
 resource "aws_iam_policy_attachment" "codebuild_s3_access" {
   name       = "codebuild-attach"
   roles      = [aws_iam_role.codebuild_role.name]
@@ -144,7 +149,7 @@ resource "aws_iam_policy_attachment" "codebuild_s3_access" {
 }
 
 
-
+# create the code build project
 resource "aws_codebuild_project" "auto_test" {
   name          = "Auto-ECS-Test"
   service_role  = aws_iam_role.codebuild_role.arn
@@ -200,7 +205,7 @@ resource "aws_codebuild_project" "auto_test" {
   }
 }
 
-
+# create the assume role
 resource "aws_iam_role" "codepipeline_role" {
   name               = "CodePipelineRole"
   assume_role_policy = <<EOF
@@ -219,7 +224,7 @@ resource "aws_iam_role" "codepipeline_role" {
 EOF
 }
 
-
+#create ecs policy to policy
 resource "aws_iam_policy" "codepipeline_ecs_permission" {
   name        = "CodepipelineECSPermissions"
   description = "CodepipelineECSPermissions"
@@ -241,12 +246,15 @@ resource "aws_iam_policy" "codepipeline_ecs_permission" {
 EOF
 }
 
+#Attach the codepipeline policy to codebuild
+
 resource "aws_iam_policy_attachment" "codepipeline_ecs" {
   name       = "codepipeline-attach"
   roles      = [aws_iam_role.codepipeline_role.name]
   policy_arn = aws_iam_policy.codepipeline_ecs_permission.arn
 }
 
+# Defined the code pipeline with stages
 
 resource "aws_codepipeline" "automacao_pipeline" {
   name     = "Auto-ECS-Test-Pipeline"

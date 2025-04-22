@@ -1,3 +1,4 @@
+# Store state file in an s3 bucket
 terraform {
   backend "s3" {
     bucket  = "my-terraform-state-ecs-demo"
