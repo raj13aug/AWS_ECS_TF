@@ -256,7 +256,7 @@ resource "aws_iam_policy_attachment" "codepipeline_ecs" {
 
 # Defined the code pipeline with stages
 
-resource "aws_codepipeline" "automacao_pipeline" {
+resource "aws_codepipeline" "automation_pipeline" {
   name     = "Auto-ECS-Test-Pipeline"
   role_arn = aws_iam_role.codepipeline_role.arn
 
