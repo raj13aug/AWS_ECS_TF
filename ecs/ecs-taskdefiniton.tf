@@ -6,7 +6,7 @@ data "aws_ecr_repository" "existing_repo" {
 
 # Local variable for fallback value
 locals {
-  ecr_repository_url = try("nataraj/exp-app-1:2", "${data.aws_ecr_repository.existing_repo.repository_url}:latest")
+  ecr_repository_url = try("nataraj13/exp-app", "${data.aws_ecr_repository.existing_repo.repository_url}:latest")
 }
 
 #Defined a task for ECS 
